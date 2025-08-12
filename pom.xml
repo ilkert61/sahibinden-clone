@@ -8,10 +8,10 @@
 		<version>3.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.listing-app-clone</groupId>
-	<artifactId>listing-app-clone</artifactId>
+	<groupId>com.sahibinden-clone</groupId>
+	<artifactId>sahibinden-clone</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>listing-app-clone</name>
+	<name>sahibinden-clone</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -49,6 +49,9 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+
+
 	</dependencies>
 
 	<build>
