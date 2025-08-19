@@ -19,11 +19,9 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        // Null kontrolü
         if (request.getUser() == null || request.getUser().isBlank() || request.getPass() == null || request.getPass().isBlank()) {
             return new LoginResponse(false, "Kullanıcı adı/email ve şifre girilmesi zorunludur.", null);
         }
-        //Kullanıcı arama adımı
         Optional<Users> userOpt = usersRepository
                 .findByEmailIgnoreCaseOrUsernameIgnoreCase(request.getUser(), request.getUser());
 
