@@ -4,60 +4,84 @@ import com.sahibinden_clone.sahibinden_clone.dto.EditUserRequest;
 import com.sahibinden_clone.sahibinden_clone.dto.UserDTO;
 import com.sahibinden_clone.sahibinden_clone.entity.Users;
 import com.sahibinden_clone.sahibinden_clone.repository.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
 @Service
 public class UserService {
 
-    @Autowired
-    UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
 
-    public Users addUser(@RequestBody UserDTO userDTO) throws Exception {
-        if (usersRepository.findByUsername(userDTO.getUsername()) != null) {
+    public UserService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
+
+    public Users addUser(UserDTO userDTO) throws Exception {
+        if (usersRepository.existsByUsernameIgnoreCase(userDTO.getUsername())) {
             throw new Exception("Kullanıcı adı zaten alınmış.");
         }
+
+        if (userDTO.getEmail() != null &&
+                usersRepository.existsByEmailIgnoreCaseAndUsernameNot(
+                        userDTO.getEmail().trim().toLowerCase(),
+                        userDTO.getUsername()
+                )) {
+            throw new Exception("Bu e-posta zaten kullanımda.");
+        }
+
+        if (userDTO.getPhone() != null &&
+                usersRepository.existsByPhoneAndUsernameNot(
+                        userDTO.getPhone().trim(),
+                        userDTO.getUsername()
+                )) {
+            throw new Exception("Bu telefon numarası zaten kullanımda.");
+        }
+
         Users user = new Users();
         user.setUsername(userDTO.getUsername());
         user.setFirstname(userDTO.getFirstName());
         user.setLastname(userDTO.getLastName());
         user.setPhone(userDTO.getPhone());
-        user.setPassword(userDTO.getPassword()); // TODO: BCrypt ile hashle
+        user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setGender(userDTO.getGender());
         user.setBirthdate(userDTO.getBirthday());
-        Users saved = usersRepository.save(user);
-        return saved;
+
+        return usersRepository.save(user);
     }
 
-    public void deleteUserWithPassword(UUID userId, String password) throws Exception {
-        Users user = usersRepository.findById(userId)
+    public void deleteUserWithPasswordByUsername(String username, String password) throws Exception {
+        Users user = usersRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new Exception("Kullanıcı bulunamadı."));
-
-        if (!user.getPassword().equals(password)) { // TODO: encoder.matches(...)
+        if (!user.getPassword().equals(password)) {
             throw new Exception("Girilen şifre yanlış.");
         }
         usersRepository.delete(user);
     }
 
     @Transactional
-    public Users updateUserContact(UUID userId, EditUserRequest request) {
-        Users user = usersRepository.findById(userId)
+    public Users updateUserContactByUsername(String username, EditUserRequest request) {
+        Users user = usersRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı."));
 
-        if (usersRepository.existsByEmailIgnoreCaseAndIdNot(request.getEmail(), userId)) {
-            throw new IllegalArgumentException("Bu e-posta zaten kullanımda.");
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            String newEmail = request.getEmail().trim().toLowerCase();
+            if (usersRepository.existsByEmailIgnoreCaseAndUsernameNot(newEmail, username)) {
+                throw new IllegalArgumentException("Bu e-posta zaten kullanımda.");
+            }
+            user.setEmail(newEmail);
         }
 
-        String normalizedPhone = request.getPhone().replaceAll("\\s+", "").trim();
-        user.setEmail(request.getEmail().trim());
-        user.setPhone(normalizedPhone);
+        if (request.getPhone() != null && !request.getPhone().isBlank()) {
+            String newPhone = request.getPhone().replaceAll("\\s+", "").trim();
+            if (usersRepository.existsByPhoneAndUsernameNot(newPhone, username)) {
+                throw new IllegalArgumentException("Bu telefon numarası zaten kullanımda.");
+            }
+            user.setPhone(newPhone);
+        }
 
-        Users updated = usersRepository.save(user);
-        return updated;
+        return usersRepository.save(user);
     }
 }
