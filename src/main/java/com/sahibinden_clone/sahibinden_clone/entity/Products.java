@@ -26,10 +26,9 @@ public class Products {
     private Long productid;
 
 
-
     @NotNull
     @Size(max = 100)
-    @Column(name = "brand",nullable = false, length = 100)
+    @Column(name = "brand", nullable = false, length = 100)
     private String brand;
 
     @NotNull
@@ -48,7 +47,7 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "fueltype", length = 50,nullable = false)
+    @Column(name = "fueltype", length = 50, nullable = false)
     private String fueltype;
 
     @NotNull
@@ -57,7 +56,7 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "transmissiontype", length = 50,nullable = false)
+    @Column(name = "transmissiontype", length = 50, nullable = false)
     private String transmissiontype;
 
     @NotNull
@@ -66,11 +65,20 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "color", length = 50,nullable = false)
+    @Column(name = "color", length = 50, nullable = false)
     private String color;
 
     @NotNull
     @Column(name = "hasaccidentrecord", nullable = false)
     private Boolean hasaccidentrecord;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private ProductStatus status;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) status = ProductStatus.ACTIVE;
+
+    }
 }
