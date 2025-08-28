@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Data @AllArgsConstructor @NoArgsConstructor
 public class ProductsDTO {
     private String brand;
     private String model;
@@ -18,6 +16,7 @@ public class ProductsDTO {
     private int mileage;
     private String color;
     private boolean hasAccidentRecord;
-
+    private Integer price;
+    private String ownerUsername;
+    private String imageUrl;
 }
-

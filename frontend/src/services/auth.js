@@ -1,6 +1,5 @@
-import api from "../lib/api";
+import axios from "axios";
 
-export async function login({ user, pass }) {
-    const { data } = await api.post("/auth/login", { user, pass });
-    return data; // { success, message, userId }
-}
+export const login = async (payload) => {
+    const res = await axios.post("http://localhost:8080/auth/login", payload);
+    return res.data; }

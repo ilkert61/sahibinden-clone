@@ -14,7 +14,7 @@ public interface ProductsRepository extends JpaRepository<Products, UUID> {
     Optional<Products> findByProductid(Long productid);
 
     Page<Products> findAllByStatus(ProductStatus status, Pageable pageable);
-
+    Page<Products> findAllByOwnerUsernameIgnoreCase(String ownerUsername, Pageable pageable);
 
     @Query("""
         SELECT p FROM Products p

@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "users")
 public class Users {
 
     @Id
@@ -17,28 +17,23 @@ public class Users {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Size(max = 12)
-    @NotNull
-    @Column(name = "username", nullable = false, length = 12)
+    @Size(max = 12) @NotNull
+    @Column(name = "username", nullable = false, length = 12, unique = true)
     private String username;
 
-    @Size(max = 50)
-    @NotNull
+    @Size(max = 50) @NotNull
     @Column(name = "firstname", nullable = false, length = 50)
     private String firstname;
 
-    @Size(max = 50)
-    @NotNull
+    @Size(max = 50) @NotNull
     @Column(name = "lastname", nullable = false, length = 50)
     private String lastname;
 
-    @Size(max = 11)
-    @NotNull
+    @Size(max = 11) @NotNull
     @Column(name = "phone", nullable = false, length = 11)
     private String phone;
 
-    @Size(max = 255)
-    @NotNull
+    @Size(max = 255) @NotNull
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -46,17 +41,13 @@ public class Users {
     @Column(name = "birthdate", nullable = false)
     private LocalDate birthdate;
 
-    @Size(max = 6)
-    @Enumerated(EnumType.STRING)
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false, length = 6)
     private Gender gender;
 
-    @Size(max = 12)
-    @NotNull
+
+    @Size(max = 12) @NotNull
     @Column(name = "password", nullable = false, length = 12)
-    private String password;}
-
-
-
-
+    private String password;
+}

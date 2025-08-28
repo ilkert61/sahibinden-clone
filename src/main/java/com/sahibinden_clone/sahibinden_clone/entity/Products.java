@@ -4,27 +4,23 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Generated;
-
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "products")
 public class Products {
 
-
     @Id
-    @UuidGenerator
-    @Column(name = "id", nullable = false, updatable = false)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
     @Column(name = "productid", insertable = false, updatable = false)
     private Long productid;
-
 
     @NotNull
     @Size(max = 100)
@@ -76,9 +72,20 @@ public class Products {
     @Column(name = "status", nullable = false, length = 20)
     private ProductStatus status;
 
+    @NotNull
+    @Column(name = "price", nullable = false)
+    private Integer price;
+
+    @Size(max = 100)
+    @Column(name = "owner_username", length = 100)
+    private String ownerUsername;
+
+    @jakarta.validation.constraints.Size(max = 255)
+    @jakarta.persistence.Column(name = "image_url", length = 255)
+    private String imageUrl;
+
     @PrePersist
     public void prePersist() {
         if (status == null) status = ProductStatus.ACTIVE;
-
     }
 }

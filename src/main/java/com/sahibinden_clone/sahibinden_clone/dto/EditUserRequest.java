@@ -13,7 +13,7 @@ public class EditUserRequest {
     private String email;   // opsiyonel
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(min = 7, max = 20, message = "Telefon 7-20 karakter olmalı")
+    @Size(min = 11, max = 11, message = "Telefon 11 karakter olmalı")
     private String phone;
 
 

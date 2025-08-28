@@ -1,6 +1,3 @@
 package com.sahibinden_clone.sahibinden_clone.entity;
 
-
-public enum Gender {
-    male, female
-}
+public enum Gender { male, female }
