@@ -1,49 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/auth";
+import { login as apiLogin } from "../services/auth";
+import { useAuth } from "../lib/AuthContext";
 
 export default function Login() {
     const [user, setUser] = useState("");
     const [pass, setPass] = useState("");
     const [msg, setMsg] = useState(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setMsg(null);
+        e.preventDefault(); setMsg(null);
         try {
-            const res = await login({ user, pass }); // { success, message, userId }
-            if (!res.success) {
-                setMsg(res.message || "Giriş başarısız");
-                return;
-            }
-            localStorage.setItem("userId", res.userId);
-            navigate("/");
+            const res = await apiLogin({ user, pass });
+            if (!res.success) return setMsg(res.message || "Giriş başarısız");
+            // Context + localStorage senkronu
+            login({ userId: res.userId, username: res.username });
+            navigate("/panel");
         } catch (err) {
-            setMsg(err?.response?.data?.message || "Sunucu hatası");
+            setMsg(err?.response?.data || "Sunucu hatası");
         }
     };
 
     return (
-        <div style={{ padding: 24, maxWidth: 420 }}>
-            <h2>Giriş Yap</h2>
-            <form onSubmit={handleSubmit}>
+        <div className="max-w-md mx-auto p-4">
+            <h2 className="text-xl font-bold mb-1">Giriş Yap</h2>
+            <p className="text-sm text-gray-500 mb-4">Hesabınla oturum aç.</p>
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
                 <input
+                    className="h-10 px-3 rounded-lg border border-gray-300 bg-white"
                     placeholder="Kullanıcı / E-posta"
-                    value={user}
-                    onChange={(e) => setUser(e.target.value)}
-                    style={{ width: "100%", padding: 8, marginBottom: 8 }}
+                    value={user} onChange={e=>setUser(e.target.value)}
                 />
                 <input
-                    type="password"
-                    placeholder="Şifre"
-                    value={pass}
-                    onChange={(e) => setPass(e.target.value)}
-                    style={{ width: "100%", padding: 8, marginBottom: 8 }}
+                    className="h-10 px-3 rounded-lg border border-gray-300 bg-white"
+                    type="password" placeholder="Şifre"
+                    value={pass} onChange={e=>setPass(e.target.value)}
                 />
-                <button type="submit">Giriş</button>
+                <button className="px-4 h-10 rounded-xl bg-brand hover:bg-brandDark font-semibold">Giriş</button>
             </form>
-            {msg && <p style={{ color: "crimson", marginTop: 8 }}>{msg}</p>}
+            {msg && <p className="text-red-600 mt-3">{msg}</p>}
         </div>
     );
 }

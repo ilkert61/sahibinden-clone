@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;   // <-- eklendi
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +37,8 @@ class AuthControllerTest {
     void login_shouldReturnSuccess() throws Exception {
         UUID userId = UUID.randomUUID();
         given(authService.login(any(LoginRequest.class)))
-                .willReturn(new LoginResponse(true, "Giriş başarılı", userId));
+                // 4 argümanlı ctor: success, message, userId, username
+                .willReturn(new LoginResponse(true, "Giriş başarılı", userId, "testuser"));
 
         LoginRequest req = new LoginRequest();
         req.setUser("testuser");
@@ -48,13 +50,15 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.message", containsString("Giriş başarılı")))
-                .andExpect(jsonPath("$.userId", is(userId.toString())));
+                .andExpect(jsonPath("$.userId", is(userId.toString())))
+                .andExpect(jsonPath("$.username", is("testuser"))); // opsiyonel ama faydalı
     }
 
     @Test
     void login_shouldReturnFailure() throws Exception {
         given(authService.login(any(LoginRequest.class)))
-                .willReturn(new LoginResponse(false, "Kullanıcı bulunamadı", null));
+                // başarısız: userId ve username null
+                .willReturn(new LoginResponse(false, "Kullanıcı bulunamadı", null, null));
 
         LoginRequest req = new LoginRequest();
         req.setUser("nouser");
@@ -66,6 +70,8 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.message", containsString("Kullanıcı bulunamadı")))
-                .andExpect(jsonPath("$.userId").doesNotExist());
+                // nullValue kullanıyoruz; JSON'da alan null olarak da gelebilir
+                .andExpect(jsonPath("$.userId", nullValue()))
+                .andExpect(jsonPath("$.username", nullValue()));
     }
 }

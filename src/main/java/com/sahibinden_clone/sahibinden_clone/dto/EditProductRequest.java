@@ -7,41 +7,26 @@ import lombok.Data;
 
 @Data
 public class EditProductRequest {
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 100)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 100)
     private String brand;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 100)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 100)
     private String model;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 100)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 100)
     private String series;
-
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Short productionYear;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 50)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 50)
     private String fuelType;
-
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Short engineVolume;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 50)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 50)
     private String transmissionType;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Min(0)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Min(0)
     private Integer mileage;
-
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Size(max = 50)
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Size(max = 50)
     private String color;
-
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED) @Min(0)
+    private Integer price;
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Boolean hasAccidentRecord;
 }
