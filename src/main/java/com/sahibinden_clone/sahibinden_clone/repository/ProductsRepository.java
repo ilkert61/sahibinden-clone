@@ -11,9 +11,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductsRepository extends JpaRepository<Products, UUID> {
-    Optional<Products> findByProductid(Long productid);
+
+    // Use UUID id instead of productid
+    Optional<Products> findById(UUID id);
 
     Page<Products> findAllByStatus(ProductStatus status, Pageable pageable);
+
     Page<Products> findAllByOwnerUsernameIgnoreCase(String ownerUsername, Pageable pageable);
 
     @Query("""

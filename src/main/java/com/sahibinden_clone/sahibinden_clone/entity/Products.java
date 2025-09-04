@@ -19,9 +19,6 @@ public class Products {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "productid", insertable = false, updatable = false)
-    private Long productid;
-
     @NotNull
     @Size(max = 100)
     @Column(name = "brand", nullable = false, length = 100)
@@ -43,7 +40,7 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "fueltype", length = 50, nullable = false)
+    @Column(name = "fueltype", nullable = false, length = 50)
     private String fueltype;
 
     @NotNull
@@ -52,7 +49,7 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "transmissiontype", length = 50, nullable = false)
+    @Column(name = "transmissiontype", nullable = false, length = 50)
     private String transmissiontype;
 
     @NotNull
@@ -61,7 +58,7 @@ public class Products {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "color", length = 50, nullable = false)
+    @Column(name = "color", nullable = false, length = 50)
     private String color;
 
     @NotNull
@@ -80,12 +77,14 @@ public class Products {
     @Column(name = "owner_username", length = 100)
     private String ownerUsername;
 
-    @jakarta.validation.constraints.Size(max = 255)
-    @jakarta.persistence.Column(name = "image_url", length = 255)
+    @Size(max = 255)
+    @Column(name = "image_url", length = 255)
     private String imageUrl;
 
     @PrePersist
     public void prePersist() {
-        if (status == null) status = ProductStatus.ACTIVE;
+        if (status == null) {
+            status = ProductStatus.ACTIVE;
+        }
     }
 }

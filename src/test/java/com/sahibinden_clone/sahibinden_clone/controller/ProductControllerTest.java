@@ -31,17 +31,31 @@ class ProductControllerTest {
     @MockBean
     private ProductsService productsService;
 
-
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void addProduct_shouldReturnProduct() throws Exception {
-        ProductsDTO dto = new ProductsDTO("BMW","320i","3",(short)2020,"Benzin",(short)2000,"Otomatik",50000,"Siyah",false);
+        // DTO matching constructor (Short, Integer, Boolean types)
+        ProductsDTO dto = new ProductsDTO(
+                "BMW",              // brand
+                "320i",             // model
+                "3",                // series
+                (short) 2020,       // productionYear
+                "Benzin",           // fuelType
+                (short) 2000,       // engineVolume
+                "Otomatik",         // transmissionType
+                50000,              // mileage
+                "Siyah",            // color
+                false,              // hasAccidentRecord
+                850000,             // price
+                "testuser",         // ownerUsername
+                null                // imageUrl
+        );
 
+        UUID id = UUID.randomUUID();
         Products product = new Products();
-        product.setId(UUID.randomUUID());
-        product.setProductid(1001L);
+        product.setId(id);
         product.setBrand("BMW");
         product.setModel("320i");
 
@@ -51,14 +65,18 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.brand").value("BMW"));
+                .andExpect(jsonPath("$.brand").value("BMW"))
+                .andExpect(jsonPath("$.model").value("320i"));
     }
 
     @Test
     void list_shouldReturnPage() throws Exception {
         Products p = new Products();
+        p.setId(UUID.randomUUID());
         p.setBrand("BMW");
-        given(productsService.list(any())).willReturn(new PageImpl<>(List.of(p), PageRequest.of(0,1), 1));
+
+        given(productsService.list(any()))
+                .willReturn(new PageImpl<>(List.of(p), PageRequest.of(0, 1), 1));
 
         mockMvc.perform(get("/product/list?page=0&size=1&sort=brand,asc"))
                 .andExpect(status().isOk())
@@ -67,14 +85,16 @@ class ProductControllerTest {
 
     @Test
     void changeStatus_shouldReturnUpdated() throws Exception {
+        UUID id = UUID.randomUUID();
+
         Products p = new Products();
-        p.setProductid(1001L);
+        p.setId(id);
         p.setBrand("BMW");
         p.setStatus(ProductStatus.SOLD);
 
-        given(productsService.changeStatus(1001L, ProductStatus.SOLD)).willReturn(p);
+        given(productsService.changeStatus(id, ProductStatus.SOLD)).willReturn(p);
 
-        mockMvc.perform(put("/product/status/1001?value=SOLD"))
+        mockMvc.perform(put("/product/status/" + id + "?value=SOLD"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SOLD"));
     }

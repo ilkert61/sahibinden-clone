@@ -37,6 +37,7 @@ class ProductsRepositoryTest {
         product1.setColor("Siyah");
         product1.setHasaccidentrecord(false);
         product1.setStatus(ProductStatus.ACTIVE);
+        product1.setPrice(50000);
 
         product2 = new Products();
         product2.setId(UUID.randomUUID());
@@ -51,25 +52,22 @@ class ProductsRepositoryTest {
         product2.setColor("Beyaz");
         product2.setHasaccidentrecord(true);
         product2.setStatus(ProductStatus.SOLD);
+        product2.setPrice(60000);
 
         productsRepository.save(product1);
         productsRepository.save(product2);
     }
 
     @Test
-    void findByProductid_shouldReturnCorrectProduct() {
-        // H2 otomatik productid set etmeyeceği için repository.save sonrası productid null olabilir.
-        // Burada sadece id üzerinden kaydı çekip, elle productid atayabiliriz.
-        product1.setProductid(101L);
-        productsRepository.save(product1);
-
-        assertThat(productsRepository.findByProductid(101L)).isPresent();
+    void findById_shouldReturnCorrectProduct() {
+        UUID id = product1.getId();
+        assertThat(productsRepository.findById(id)).isPresent();
+        assertThat(productsRepository.findById(id).get().getBrand()).isEqualTo("BMW");
     }
 
     @Test
     void findAllByStatus_shouldReturnOnlyActive() {
         Page<Products> page = productsRepository.findAllByStatus(ProductStatus.ACTIVE, PageRequest.of(0, 10));
-
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getContent().get(0).getBrand()).isEqualTo("BMW");
     }
@@ -77,12 +75,10 @@ class ProductsRepositoryTest {
     @Test
     void search_shouldFilterByBrand() {
         Page<Products> result = productsRepository.search(
-                "bmw", // brand → case insensitive
-                null, null, null, null, null,
+                "bmw", null, null, null, null, null,
                 null, null, null, null, null,
                 PageRequest.of(0, 10)
         );
-
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getModel()).isEqualTo("320i");
     }
@@ -91,11 +87,10 @@ class ProductsRepositoryTest {
     void search_shouldFilterByYearRange() {
         Page<Products> result = productsRepository.search(
                 null, null, null, null, null, null,
-                (short)2019, (short)2021, // minYear = 2019, maxYear = 2021
+                (short) 2019, (short) 2021,
                 null, null, null,
                 PageRequest.of(0, 10)
         );
-
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getBrand()).isEqualTo("BMW");
     }
@@ -107,7 +102,6 @@ class ProductsRepositoryTest {
                 null, null, null, null, null,
                 PageRequest.of(0, 10)
         );
-
         assertThat(result.getTotalElements()).isEqualTo(2);
     }
 }

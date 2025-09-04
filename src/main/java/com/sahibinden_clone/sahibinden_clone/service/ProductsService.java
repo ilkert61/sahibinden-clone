@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class ProductsService {
 
@@ -21,13 +23,13 @@ public class ProductsService {
 
     /* ---------- Helpers ---------- */
 
-    private Products getByProductidOrThrow(Long productid) {
-        return productRepository.findByProductid(productid)
+    private Products getByIdOrThrow(UUID id) {
+        return productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ürün bulunamadı."));
     }
 
-    private boolean isBlank(String s){ return s == null || s.isBlank(); }
-    private String nullIfBlank(String s){ return isBlank(s) ? null : s.trim(); }
+    private boolean isBlank(String s) { return s == null || s.isBlank(); }
+    private String nullIfBlank(String s) { return isBlank(s) ? null : s.trim(); }
 
     /* ---------- Queries ---------- */
 
@@ -35,16 +37,17 @@ public class ProductsService {
         return productRepository.findAll(pageable);
     }
 
-
     public Page<Products> listByOwnerUsername(String username, Pageable pageable) {
         return productRepository.findAllByOwnerUsernameIgnoreCase(username, pageable);
     }
 
-    public Products getById(Long productid) {
-        return getByProductidOrThrow(productid);
+    public Products getById(UUID id) {
+        return getByIdOrThrow(id);
     }
-    public Products save(Products p){ return productRepository.save(p); }
 
+    public Products save(Products p) {
+        return productRepository.save(p);
+    }
 
     public Page<Products> search(
             String brand, String model, String series, String fuelType, String transmissionType, String color,
@@ -81,12 +84,11 @@ public class ProductsService {
         p.setPrice(dto.getPrice());
         p.setOwnerUsername(dto.getOwnerUsername());
         p.setImageUrl(dto.getImageUrl());
-
         return productRepository.save(p);
     }
 
-    public void deleteByProductIdOwned(Long productid, String username) {
-        Products p = getByProductidOrThrow(productid);
+    public void deleteByIdOwned(UUID id, String username) {
+        Products p = getByIdOrThrow(id);
         if (p.getOwnerUsername() == null || !username.equalsIgnoreCase(p.getOwnerUsername())) {
             throw new RuntimeException("Silmeye yetkiniz yok!");
         }
@@ -94,8 +96,8 @@ public class ProductsService {
     }
 
     @Transactional
-    public Products editByProductIdOwned(Long productid, EditProductRequest req, String username) {
-        Products p = getByProductidOrThrow(productid);
+    public Products editByIdOwned(UUID id, EditProductRequest req, String username) {
+        Products p = getByIdOrThrow(id);
         if (p.getOwnerUsername() == null || !p.getOwnerUsername().equalsIgnoreCase(username)) {
             throw new IllegalArgumentException("Bu ilan size ait değil.");
         }
@@ -118,8 +120,8 @@ public class ProductsService {
     }
 
     @Transactional
-    public Products changeStatus(Long productid, ProductStatus status) {
-        Products p = getByProductidOrThrow(productid);
+    public Products changeStatus(UUID id, ProductStatus status) {
+        Products p = getByIdOrThrow(id);
         if (status == null) throw new IllegalArgumentException("Geçersiz status değeri.");
         if (status.equals(p.getStatus())) return p;
         p.setStatus(status);

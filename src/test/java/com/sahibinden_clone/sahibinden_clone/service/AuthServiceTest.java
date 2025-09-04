@@ -37,11 +37,11 @@ class AuthServiceTest {
         user.setUsername("testuser");
         user.setEmail("test@mail.com");
         user.setPassword("123456");
-        user.setFirstName("Test");
-        user.setLastName("User");
+        user.setFirstname("Test");
+        user.setLastname("User");
         user.setPhone("5551112233");
-        user.setGender(Gender.MALE);
-        user.setBirthday(LocalDate.of(2000, 1, 1));
+        user.setGender(Gender.male);
+        user.setBirthdate(LocalDate.of(2000, 1, 1));
     }
 
     @Test
