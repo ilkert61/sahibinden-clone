@@ -9,7 +9,7 @@ import Button from "../../components/ui/Button";
 
 export default function EditProduct() {
     const { productid: productidParam } = useParams();
-    const productid = Number(productidParam);
+    const productid = productidParam;
     const { user } = useAuth() || {};
     const nav = useNavigate();
 
